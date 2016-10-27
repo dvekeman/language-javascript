@@ -34,6 +34,7 @@ Library
                    , containers       >= 0.2
                    , blaze-builder    >= 0.2
                    , bytestring       >= 0.9.1
+                   , wl-pprint        >= 1.2
                    , text             >= 1.2
                    , utf8-string      >= 0.3.7 && < 2
   if impl(ghc >= 7.10)
@@ -51,6 +52,7 @@ Library
                        Language.JavaScript.Parser.Parser
                        Language.JavaScript.Parser.SrcLocation
                        Language.JavaScript.Pretty.Printer
+                       Language.JavaScript.Pretty.Pretty
                        Language.JavaScript.Process.Minify
   Other-modules:       Language.JavaScript.Parser.LexerUtils
                        Language.JavaScript.Parser.ParseError
