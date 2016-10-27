@@ -16,3 +16,5 @@
 /unicode/uc-nl.htm
 /unicode/uc-pc.htm
 cabal.sandbox.config
+**/*.hi
+**/*.o
