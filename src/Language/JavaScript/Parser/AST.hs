@@ -31,12 +31,13 @@ import Data.List
 import Language.JavaScript.Parser.SrcLocation (TokenPosn (..))
 import Language.JavaScript.Parser.Token
 
+import Debug.Trace 
 -- ---------------------------------------------------------------------
 
 data JSAnnot
     = JSAnnot !TokenPosn ![CommentAnnotation] -- ^Annotation: position and comment/whitespace information
     | JSNoAnnot -- ^No annotation
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 
 data JSAST
@@ -44,7 +45,7 @@ data JSAST
     | JSAstStatement !JSStatement !JSAnnot
     | JSAstExpression !JSExpression !JSAnnot
     | JSAstLiteral !JSExpression !JSAnnot
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSStatement
     = JSStatementBlock !JSAnnot ![JSStatement] !JSAnnot !JSSemi     -- ^lbrace, stmts, rbrace, autosemi
@@ -71,7 +72,7 @@ data JSStatement
     | JSVariable !JSAnnot !(JSCommaList JSExpression) !JSSemi -- ^var|const, decl, autosemi
     | JSWhile !JSAnnot !JSAnnot !JSExpression !JSAnnot !JSStatement -- ^while,lb,expr,rb,stmt
     | JSWith !JSAnnot !JSAnnot !JSExpression !JSAnnot !JSStatement !JSSemi -- ^with,lb,expr,rb,stmt list
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSExpression
     -- | Terminals
@@ -103,7 +104,7 @@ data JSExpression
     | JSObjectLiteral !JSAnnot !JSObjectPropertyList !JSAnnot -- ^lbrace contents rbrace
     | JSUnaryExpression !JSUnaryOp !JSExpression
     | JSVarInitExpression !JSExpression !JSVarInitializer -- ^identifier, initializer
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSBinOp
     = JSBinOpAnd !JSAnnot
@@ -129,7 +130,7 @@ data JSBinOp
     | JSBinOpStrictNeq !JSAnnot
     | JSBinOpTimes !JSAnnot
     | JSBinOpUrsh !JSAnnot
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSUnaryOp
     = JSUnaryOpDecr !JSAnnot
@@ -141,12 +142,12 @@ data JSUnaryOp
     | JSUnaryOpTilde !JSAnnot
     | JSUnaryOpTypeof !JSAnnot
     | JSUnaryOpVoid !JSAnnot
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSSemi
     = JSSemi !JSAnnot
     | JSSemiAuto
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSAssignOp
     = JSAssign !JSAnnot
@@ -161,42 +162,42 @@ data JSAssignOp
     | JSBwAndAssign !JSAnnot
     | JSBwXorAssign !JSAnnot
     | JSBwOrAssign !JSAnnot
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSTryCatch
     = JSCatch !JSAnnot !JSAnnot !JSExpression !JSAnnot !JSBlock -- ^catch,lb,ident,rb,block
     | JSCatchIf !JSAnnot !JSAnnot !JSExpression !JSAnnot !JSExpression !JSAnnot !JSBlock -- ^catch,lb,ident,if,expr,rb,block
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSTryFinally
     = JSFinally !JSAnnot !JSBlock -- ^finally,block
     | JSNoFinally
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSBlock
     = JSBlock !JSAnnot ![JSStatement] !JSAnnot -- ^lbrace, stmts, rbrace
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSSwitchParts
     = JSCase !JSAnnot !JSExpression !JSAnnot ![JSStatement]    -- ^expr,colon,stmtlist
     | JSDefault !JSAnnot !JSAnnot ![JSStatement] -- ^colon,stmtlist
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSVarInitializer
     = JSVarInit !JSAnnot !JSExpression -- ^ assignop, initializer
     | JSVarInitNone
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSObjectProperty
     = JSPropertyAccessor !JSAccessor !JSPropertyName !JSAnnot ![JSExpression] !JSAnnot !JSBlock -- ^(get|set), name, lb, params, rb, block
     | JSPropertyNameandValue !JSPropertyName !JSAnnot ![JSExpression] -- ^name, colon, value
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSPropertyName
     = JSPropertyIdent !JSAnnot !String
     | JSPropertyString !JSAnnot !String
     | JSPropertyNumber !JSAnnot !String
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 type JSObjectPropertyList = JSCommaTrailingList JSObjectProperty
 
@@ -204,38 +205,38 @@ type JSObjectPropertyList = JSCommaTrailingList JSObjectProperty
 data JSAccessor
     = JSAccessorGet !JSAnnot
     | JSAccessorSet !JSAnnot
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSIdent
     = JSIdentName !JSAnnot !String
     | JSIdentNone
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSArrayElement
     = JSArrayElement !JSExpression
     | JSArrayComma !JSAnnot
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSCommaList a
     = JSLCons !(JSCommaList a) !JSAnnot !a -- ^head, comma, a
     | JSLOne !a -- ^ single element (no comma)
     | JSLNil
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 data JSCommaTrailingList a
     = JSCTLComma !(JSCommaList a) !JSAnnot -- ^list, trailing comma
     | JSCTLNone !(JSCommaList a) -- ^list
-    deriving (Data, Eq, Show, Typeable)
+    deriving (Data, Eq, Show, Typeable, Read)
 
 -- -----------------------------------------------------------------------------
 -- | Show the AST elements stipped of their JSAnnot data.
 
 -- Strip out the location info
 showStripped :: JSAST -> String
-showStripped (JSAstProgram xs _) = "JSAstProgram " ++ ss xs
-showStripped (JSAstStatement s _) = "JSAstStatement (" ++ ss s ++ ")"
-showStripped (JSAstExpression e _) = "JSAstExpression (" ++ ss e ++ ")"
-showStripped (JSAstLiteral s _)  = "JSAstLiteral (" ++ ss s ++ ")"
+showStripped (JSAstProgram xs _) = "JSAstProgram " ++ ss xs ++ " JSNoAnnot"
+showStripped (JSAstStatement s _) = "JSAstStatement " ++ ss s ++ " JSNoAnnot"
+showStripped (JSAstExpression e _) = "JSAstExpression " ++ ss e ++ " JSNoAnnot"
+showStripped (JSAstLiteral s _)  = "JSAstLiteral " ++ ss s ++ " JSNoAnnot"
 
 
 class ShowStripped a where
@@ -243,163 +244,161 @@ class ShowStripped a where
 
 
 instance ShowStripped JSStatement where
-    ss (JSStatementBlock _ xs _ _) = "JSStatementBlock " ++ ss xs
-    ss (JSBreak _ JSIdentNone s) = "JSBreak" ++ commaIf (ss s)
-    ss (JSBreak _ (JSIdentName _ n) s) = "JSBreak " ++ singleQuote n ++ commaIf (ss s)
-    ss (JSContinue _ JSIdentNone s) = "JSContinue" ++ commaIf (ss s)
-    ss (JSContinue _ (JSIdentName _ n) s) = "JSContinue " ++ singleQuote n ++ commaIf (ss s)
-    ss (JSConstant _ xs _as) = "JSConstant " ++ ss xs
-    ss (JSDoWhile _d x1 _w _lb x2 _rb x3) = "JSDoWhile (" ++ ss x1 ++ ") (" ++ ss x2 ++ ") (" ++ ss x3 ++ ")"
-    ss (JSFor _ _lb x1s _s1 x2s _s2 x3s _rb x4) = "JSFor " ++ ss x1s ++ " " ++ ss x2s ++ " " ++ ss x3s ++ " (" ++ ss x4 ++ ")"
-    ss (JSForIn _ _lb x1s _i x2 _rb x3) = "JSForIn " ++ ss x1s ++ " (" ++ ss x2 ++ ") (" ++ ss x3 ++ ")"
-    ss (JSForVar _ _lb _v x1s _s1 x2s _s2 x3s _rb x4) = "JSForVar " ++ ss x1s ++ " " ++ ss x2s ++ " " ++ ss x3s ++ " (" ++ ss x4 ++ ")"
-    ss (JSForVarIn _ _lb _v x1 _i x2 _rb x3) = "JSForVarIn (" ++ ss x1 ++ ") (" ++ ss x2 ++ ") (" ++ ss x3 ++ ")"
-    ss (JSFunction _ n _lb pl _rb x3 _) = "JSFunction " ++ ssid n ++ " " ++ ss pl ++ " (" ++ ss x3 ++ ")"
-    ss (JSIf _ _lb x1 _rb x2) = "JSIf (" ++ ss x1 ++ ") (" ++ ss x2 ++ ")"
-    ss (JSIfElse _ _lb x1 _rb x2 _e x3) = "JSIfElse (" ++ ss x1 ++ ") (" ++ ss x2 ++ ") (" ++ ss x3 ++ ")"
-    ss (JSLabelled x1 _c x2) = "JSLabelled (" ++ ss x1 ++ ") (" ++ ss x2 ++ ")"
-    ss (JSEmptyStatement _) = "JSEmptyStatement"
-    ss (JSExpressionStatement l s) = ss l ++ (let x = ss s in if not (null x) then ',':x else "")
-    ss (JSAssignStatement lhs op rhs s) ="JSOpAssign (" ++ ss op ++ "," ++ ss lhs ++ "," ++ ss rhs ++ (let x = ss s in if not (null x) then "),"++x else ")")
-    ss (JSMethodCall e _ a _ s) = "JSMethodCall (" ++ ss e ++ ",JSArguments " ++ ss a ++ (let x = ss s in if not (null x) then "),"++x else ")")
-    ss (JSReturn _ (Just me) s) = "JSReturn " ++ ss me ++ " " ++ ss s
-    ss (JSReturn _ Nothing s) = "JSReturn " ++ ss s
-    ss (JSSwitch _ _lp x _rp _lb x2 _rb _) = "JSSwitch (" ++ ss x ++ ") " ++ ss x2
-    ss (JSThrow _ x _) = "JSThrow (" ++ ss x ++ ")"
-    ss (JSTry _ xt1 xtc xtf) = "JSTry (" ++ ss xt1 ++ "," ++ ss xtc ++ "," ++ ss xtf ++ ")"
-    ss (JSVariable _ xs _as) = "JSVariable " ++ ss xs
-    ss (JSWhile _ _lb x1 _rb x2) = "JSWhile (" ++ ss x1 ++ ") (" ++ ss x2 ++ ")"
-    ss (JSWith _ _lb x1 _rb x _) = "JSWith (" ++ ss x1 ++ ") (" ++ ss x ++ ")"
+    ss (JSStatementBlock _ xs _ s) = "JSStatementBlock " ++ "JSNoAnnot (" ++ ss xs ++ ") JSNoAnnot " ++ ss s
+    ss (JSBreak _ x s) = "JSBreak " ++ "JSNoAnnot (" ++ ss x ++ ") (" ++ ss s ++ ")"
+    ss (JSContinue _ x s) = "JSContinue" ++ " JSNoAnnot (" ++ ss x ++ ") (" ++ ss s ++ ")"
+    ss (JSConstant _ xs _as) = "JSConstant "  ++ "JSNoAnnot (" ++ ss xs ++ ")"
+    ss (JSDoWhile _d x1 _w _lb x2 _rb x3) = "JSDoWhile JSNoAnnot (" ++ ss x1 ++ ") JSNoAnnot JSNoAnnot (" ++ ss x2 ++ ") JSNoAnnot (" ++ ss x3 ++ ")"
+    ss (JSFor _ _ x1s _ x2s _ x3s _ x4) = "JSFor JSNoAnnot JSNoAnnot (" ++ ss x1s ++ ") JSNoAnnot (" ++ ss x2s ++ ") JSNoAnnot (" ++ ss x3s ++ ") JSNoAnnot (" ++ ss x4 ++ ")"
+    ss (JSForIn _ _ x1s op x2s _ st) = "JSForIn JSNoAnnot JSNoAnnot (" ++ ss x1s ++ ") (" ++ ss op ++ ") (" ++ ss x2s ++ ") JSNoAnnot (" ++ ss st ++ ")"
+    ss (JSForVar _ _ _ x1s _ x2s _ x3s _ st) = "JSForVar JSNoAnnot JSNoAnnot JSNoAnnot (" ++ ss x1s ++ ") JSNoAnnot (" ++ ss x2s ++ ") JSNoAnnot (" ++ ss x3s ++ ") JSNoAnnot (" ++ ss st ++ ")"
+    ss (JSForVarIn _ _ _ x1 _ x2 _ x3) = "JSForVarIn JSNoAnnot JSNoAnnot JSNoAnnot " ++ "(" ++ ss x1 ++ ") JSNoAnnot (" ++ ss x2 ++ ") JSNoAnnot (" ++ ss x3 ++ ")"
+    ss (JSFunction _ n _ pl _ x3 s) = "JSFunction JSNoAnnot (" ++ ss n ++ ") JSNoAnnot (" ++ ss pl ++ ") JSNoAnnot (" ++ ss x3 ++ ") (" ++ ss s ++ ")"
+    ss (JSIf _ _ x1 _rb x2) = "JSIf JSNoAnnot JSNoAnnot (" ++ ss x1 ++ ") JSNoAnnot (" ++ ss x2 ++ ")"
+    ss (JSIfElse _ _lb x1 _rb x2 _e x3) = "JSIfElse JSNoAnnot JSNoAnnot (" ++ ss x1 ++ ") JSNoAnnot (" ++ ss x2 ++ ") JSNoAnnot (" ++ ss x3 ++ ")"
+    ss (JSLabelled x1 _c x2) = "JSLabelled (" ++ ss x1 ++ ") JSNoAnnot (" ++ ss x2 ++ ")"
+    ss (JSEmptyStatement _) = "JSEmptyStatement JSNoAnnot"
+    ss (JSExpressionStatement l s) = "JSExpressionStatement (" ++ ss l ++ ") (" ++ ss s ++ ")"
+    ss (JSAssignStatement lhs op rhs s) ="JSAssignStatement (" ++ ss lhs ++ ") (" ++ ss op ++ ") (" ++ ss rhs ++ ") (" ++ ss s ++ ")"
+    ss (JSMethodCall e _ a _ s) = "JSMethodCall (" ++ ss e ++ ") JSNoAnnot (" ++ ss a ++ ") JSNoAnnot (" ++ ss s ++ ")"
+    ss (JSReturn _ (Just me) s) = "JSReturn JSNoAnnot " ++ "(Just (" ++ ss me ++ ")) (" ++ ss s ++ ")"
+    ss (JSReturn _ Nothing s) = "JSReturn JSNoAnnot Nothing (" ++ ss s ++ ")"
+    ss (JSSwitch _ _ x _ _ x2 _ s) = "JSSwitch JSNoAnnot JSNoAnnot (" ++ ss x ++ ") JSNoAnnot JSNoAnnot (" ++ ss x2 ++ ") JSNoAnnot (" ++ ss s ++ ")"
+    ss (JSThrow _ x s) = "JSThrow JSNoAnnot (" ++ ss x ++ ") (" ++ ss s ++ ")"
+    ss (JSTry _ xt1 xtc xtf) = "JSTry JSNoAnnot (" ++ ss xt1 ++ ") (" ++ ss xtc ++ ") (" ++ ss xtf ++ ")"
+    ss (JSVariable _ xs s) = "JSVariable JSNoAnnot (" ++ ss xs ++ ") (" ++ ss s ++ ")"
+    ss (JSWhile _ _ x1 _ x2) = "JSWhile JSNoAnnot JSNoAnnot (" ++ ss x1 ++ ") (" ++ ss x2 ++ ")"
+    ss (JSWith _ _ x1 _ x s) = "JSWith JSNoAnnot JSNoAnnot (" ++ ss x1 ++ ") (" ++ ss x ++ ") (" ++ ss s ++ ")"
 
 instance ShowStripped JSExpression where
-    ss (JSArrayLiteral _lb xs _rb) = "JSArrayLiteral " ++ ss xs
-    ss (JSAssignExpression lhs op rhs) = "JSOpAssign (" ++ ss op ++ "," ++ ss lhs ++ "," ++ ss rhs ++ ")"
-    ss (JSCallExpression ex _ xs _) = "JSCallExpression ("++ ss ex ++ ",JSArguments " ++ ss xs ++ ")"
-    ss (JSCallExpressionDot ex _os xs) = "JSCallExpressionDot (" ++ ss ex ++ "," ++ ss xs ++ ")"
-    ss (JSCallExpressionSquare ex _os xs _cs) = "JSCallExpressionSquare (" ++ ss ex ++ "," ++ ss xs ++ ")"
-    ss (JSDecimal _ s) = "JSDecimal " ++ singleQuote s
-    ss (JSCommaExpression l _ r) = "JSExpression [" ++ ss l ++ "," ++ ss r ++ "]"
-    ss (JSExpressionBinary x2 op x3) = "JSExpressionBinary (" ++ ss op ++ "," ++ ss x2 ++ "," ++ ss x3 ++ ")"
-    ss (JSExpressionParen _lp x _rp) = "JSExpressionParen (" ++ ss x ++ ")"
-    ss (JSExpressionPostfix xs op) = "JSExpressionPostfix (" ++ ss op ++ "," ++ ss xs ++ ")"
-    ss (JSExpressionTernary x1 _q x2 _c x3) = "JSExpressionTernary (" ++ ss x1 ++ "," ++ ss x2 ++ "," ++ ss x3 ++ ")"
-    ss (JSFunctionExpression _ n _lb pl _rb x3) = "JSFunctionExpression " ++ ssid n ++ " " ++ ss pl ++ " (" ++ ss x3 ++ "))"
-    ss (JSHexInteger _ s) = "JSHexInteger " ++ singleQuote s
-    ss (JSOctal _ s) = "JSOctal " ++ singleQuote s
-    ss (JSIdentifier _ s) = "JSIdentifier " ++ singleQuote s
-    ss (JSLiteral _ []) = "JSLiteral ''"
-    ss (JSLiteral _ s) = "JSLiteral " ++ singleQuote s
-    ss (JSMemberDot x1s _d x2 ) = "JSMemberDot (" ++ ss x1s ++ "," ++ ss x2 ++ ")"
-    ss (JSMemberExpression e _ a _) = "JSMemberExpression (" ++ ss e ++ ",JSArguments " ++ ss a ++ ")"
-    ss (JSMemberNew _a n _ s _) = "JSMemberNew (" ++ ss n ++ ",JSArguments " ++ ss s ++ ")"
-    ss (JSMemberSquare x1s _lb x2 _rb) = "JSMemberSquare (" ++ ss x1s ++ "," ++ ss x2 ++ ")"
-    ss (JSNewExpression _n e) = "JSNewExpression " ++ ss e
-    ss (JSObjectLiteral _lb xs _rb) = "JSObjectLiteral " ++ ss xs
-    ss (JSRegEx _ s) = "JSRegEx " ++ singleQuote s
-    ss (JSStringLiteral _ s) = "JSStringLiteral " ++ s
-    ss (JSUnaryExpression op x) = "JSUnaryExpression (" ++ ss op ++ "," ++ ss x ++ ")"
-    ss (JSVarInitExpression x1 x2) = "JSVarInitExpression (" ++ ss x1 ++ ") " ++ ss x2
+    ss (JSArrayLiteral _lb xs _rb) = "JSArrayLiteral JSNoAnnot " ++ ss xs ++ " JSNoAnnot"
+    ss (JSAssignExpression lhs op rhs) = "JSAssignExpression (" ++ ss lhs ++ ") (" ++ ss op ++ ") (" ++ ss rhs ++ ")"
+    ss (JSCallExpression ex _ xs _) = "JSCallExpression (" ++ ss ex ++ ") JSNoAnnot (" ++ ss xs ++ ") JSNoAnnot"
+    ss (JSCallExpressionDot ex _os xs) = "JSCallExpressionDot (" ++ ss ex ++ ") JSNoAnnot (" ++ ss xs ++ ")"
+    ss (JSCallExpressionSquare ex _ xs _) = "JSCallExpressionSquare (" ++ ss ex ++ ") JSNoAnnot (" ++ ss xs ++ ") JSNoAnnot"
+    ss (JSDecimal _ s) = "JSDecimal JSNoAnnot " ++ doubleQuote s
+    ss (JSCommaExpression l _ r) = "JSCommaExpression (" ++ ss l ++ ") JSNoAnnot (" ++ ss r ++ ")"
+    ss (JSExpressionBinary x1 op x2) = "JSExpressionBinary (" ++ ss x1 ++ ") (" ++ ss op ++ ") (" ++ ss x2 ++ ")"
+    ss (JSExpressionParen _lp x _rp) = "JSExpressionParen JSNoAnnot (" ++ ss x ++ ") JSNoAnnot"
+    ss (JSExpressionPostfix xs op) = "JSExpressionPostfix (" ++ ss xs ++ ") (" ++ ss op ++ ")"
+    ss (JSExpressionTernary x1 _q x2 _c x3) = "JSExpressionTernary (" ++ ss x1 ++ ") JSNoAnnot (" ++ ss x2 ++ ") JSNoAnnot (" ++ ss x3 ++ ")"
+    ss (JSFunctionExpression _ n _lb pl _rb x3) = "JSFunctionExpression JSNoAnnot (" ++ ss n ++ ") JSNoAnnot (" ++ ss pl ++ ") JSNoAnnot (" ++ ss x3 ++ ")"
+    ss (JSHexInteger _ s) = "JSHexInteger JSNoAnnot " ++ doubleQuote s
+    ss (JSOctal _ s) = "JSOctal JSNoAnnot " ++ doubleQuote s
+    ss (JSIdentifier _ s) = "JSIdentifier JSNoAnnot " ++ doubleQuote s
+    ss (JSLiteral _ s) = "JSLiteral JSNoAnnot " ++ doubleQuote s
+    ss (JSMemberDot x1s _d x2 ) = "JSMemberDot (" ++ ss x1s ++ ") JSNoAnnot (" ++ ss x2 ++ ")"
+    ss (JSMemberExpression e _ a _) = "JSMemberExpression (" ++ ss e ++ ") JSNoAnnot (" ++ ss a ++ ") JSNoAnnot"
+    ss (JSMemberNew _ n _ s _) = "JSMemberNew JSNoAnnot (" ++ ss n ++ ") JSNoAnnot (" ++ ss s ++ ") JSNoAnnot"
+    ss (JSMemberSquare x1s _lb x2 _rb) = "JSMemberSquare (" ++ ss x1s ++ ") JSNoAnnot (" ++ ss x2 ++ ") JSNoAnnot"
+    ss (JSNewExpression _n e) = "JSNewExpression JSNoAnnot (" ++ ss e ++ ")"
+    ss (JSObjectLiteral _lb xs _rb) = "JSObjectLiteral JSNoAnnot (" ++ ss xs ++ ") JSNoAnnot"
+    ss (JSRegEx _ s) = "JSRegEx JSNoAnnot " ++ doubleQuote s
+    ss (JSStringLiteral _ s) = "JSStringLiteral JSNoAnnot " ++ doubleQuote s
+    ss (JSUnaryExpression op x) = "JSUnaryExpression (" ++ ss op ++ ") (" ++ ss x ++ ")"
+    ss (JSVarInitExpression x1 x2) = "JSVarInitExpression (" ++ ss x1 ++ ") (" ++ ss x2 ++ ")"
 
 instance ShowStripped JSTryCatch where
-    ss (JSCatch _ _lb x1 _rb x3) = "JSCatch (" ++ ss x1 ++ "," ++ ss x3 ++ ")"
-    ss (JSCatchIf _ _lb x1 _ ex _rb x3) = "JSCatch (" ++ ss x1 ++ ") if " ++ ss ex ++ " (" ++ ss x3 ++ ")"
+    ss (JSCatch _ _ x1 _ x3) = "JSCatch JSNoAnnot JSNoAnnot (" ++ ss x1 ++ ") JSNoAnnot (" ++ ss x3 ++ ")"
+    ss (JSCatchIf _ _ x1 _ ex _ x3) = "JSCatch JSNoAnnot JSNoAnnot (" ++ ss x1 ++ ") JSNoAnnot (" ++ ss ex ++ ") JSNoAnnot (" ++ ss x3 ++ ")"
 
 instance ShowStripped JSTryFinally where
-    ss (JSFinally _ x) = "JSFinally (" ++ ss x ++ ")"
-    ss JSNoFinally = "JSFinally ()"
+    ss (JSFinally _ x) = "JSFinally JSNoAnnot (" ++ ss x ++ ")"
+    ss JSNoFinally = "JSNoFinally"
 
 instance ShowStripped JSIdent where
-    ss (JSIdentName _ s) = "JSIdentifier " ++ singleQuote s
+    ss (JSIdentName _ s) = "JSIdentName JSNoAnnot " ++ doubleQuote s
     ss JSIdentNone = "JSIdentNone"
 
 instance ShowStripped JSObjectProperty where
-    ss (JSPropertyNameandValue x1 _colon x2s) = "JSPropertyNameandValue (" ++ ss x1 ++ ") " ++ ss x2s
-    ss (JSPropertyAccessor s x1 _lb1 x2s _rb1 x3) = "JSPropertyAccessor " ++ ss s ++ " (" ++ ss x1 ++ ") " ++ ss x2s ++ " (" ++ ss x3 ++ ")"
+    ss (JSPropertyNameandValue x1 _colon x2s) = "JSPropertyNameandValue (" ++ ss x1 ++ ") JSNoAnnot (" ++ ss x2s ++ ")"
+    ss (JSPropertyAccessor s x1 _lb1 x2s _rb1 x3) = "JSPropertyAccessor " ++ ss s ++ " (" ++ ss x1 ++ ") JSNoAnnot (" ++ ss x2s ++ ") JSNoAnnot (" ++ ss x3 ++ ")"
 
 instance ShowStripped JSPropertyName where
-    ss (JSPropertyIdent _ s) = "JSIdentifier " ++ singleQuote s
-    ss (JSPropertyString _ s) = "JSIdentifier " ++ singleQuote s
-    ss (JSPropertyNumber _ s) = "JSIdentifier " ++ singleQuote s
+    ss (JSPropertyIdent _ s) = "JSPropertyIdent JSNoAnnot " ++ doubleQuote s
+    ss (JSPropertyString _ s) = "JSPropertyString JSNoAnnot " ++ doubleQuote s
+    ss (JSPropertyNumber _ s) = "JSPropertyNumber JSNoAnnot " ++ doubleQuote s
 
 instance ShowStripped JSAccessor where
-    ss (JSAccessorGet _) = "JSAccessorGet"
-    ss (JSAccessorSet _) = "JSAccessorSet"
+    ss (JSAccessorGet _) = "JSAccessorGet JSNoAnnot"
 
 instance ShowStripped JSBlock where
-    ss (JSBlock _ xs _) = "JSBlock " ++ ss xs
+    ss (JSBlock _ xs _) = "JSBlock " ++ "JSNoAnnot " ++ ss xs ++ " JSNoAnnot"
 
 instance ShowStripped JSSwitchParts where
-    ss (JSCase _ x1 _c x2s) = "JSCase (" ++ ss x1 ++ ") (" ++ ss x2s ++ ")"
-    ss (JSDefault _ _c xs) = "JSDefault (" ++ ss xs ++ ")"
+    ss (JSCase _ x1 _c x2s) = "JSCase JSNoAnnot (" ++ ss x1 ++ ") JSNoAnnot (" ++ ss x2s ++ ")"
+    ss (JSDefault _ _c xs) = "JSDefault JSNoAnnot JSNoAnnot (" ++ ss xs ++ ")"
 
 instance ShowStripped JSBinOp where
-    ss (JSBinOpAnd _) = "'&&'"
-    ss (JSBinOpBitAnd _) = "'&'"
-    ss (JSBinOpBitOr _) = "'|'"
-    ss (JSBinOpBitXor _) = "'^'"
-    ss (JSBinOpDivide _) = "'/'"
-    ss (JSBinOpEq _) = "'=='"
-    ss (JSBinOpGe _) = "'>='"
-    ss (JSBinOpGt _) = "'>'"
-    ss (JSBinOpIn _) = "'in'"
-    ss (JSBinOpInstanceOf _) = "'instanceof'"
-    ss (JSBinOpLe _) = "'<='"
-    ss (JSBinOpLsh _) = "'<<'"
-    ss (JSBinOpLt _) = "'<'"
-    ss (JSBinOpMinus _) = "'-'"
-    ss (JSBinOpMod _) = "'%'"
-    ss (JSBinOpNeq _) = "'!='"
-    ss (JSBinOpOr _) = "'||'"
-    ss (JSBinOpPlus _) = "'+'"
-    ss (JSBinOpRsh _) = "'>>'"
-    ss (JSBinOpStrictEq _) = "'==='"
-    ss (JSBinOpStrictNeq _) = "'!=='"
-    ss (JSBinOpTimes _) = "'*'"
-    ss (JSBinOpUrsh _) = "'>>>'"
+    ss (JSBinOpAnd _) = "JSBinOpAnd JSNoAnnot"
+    ss (JSBinOpBitAnd _) = "JSBinOpBitAnd JSNoAnnot"
+    ss (JSBinOpBitOr _) = "JSBinOpBitOr JSNoAnnot"
+    ss (JSBinOpBitXor _) = "JSBinOpBitXor JSNoAnnot"
+    ss (JSBinOpDivide _) = "JSBinOpDivide JSNoAnnot"
+    ss (JSBinOpEq _) = "JSBinOpEq JSNoAnnot"
+    ss (JSBinOpGe _) = "JSBinOpGe JSNoAnnot"
+    ss (JSBinOpGt _) = "JSBinOpGt JSNoAnnot"
+    ss (JSBinOpIn _) = "JSBinOpIn JSNoAnnot"
+    ss (JSBinOpInstanceOf _) = "JSBinOpInstanceOf JSNoAnnot"
+    ss (JSBinOpLe _) = "JSBinOpLe JSNoAnnot"
+    ss (JSBinOpLsh _) = "JSBinOpLsh JSNoAnnot"
+    ss (JSBinOpLt _) = "JSBinOpLt JSNoAnnot"
+    ss (JSBinOpMinus _) = "JSBinOpMinus JSNoAnnot"
+    ss (JSBinOpMod _) = "JSBinOpMod JSNoAnnot"
+    ss (JSBinOpNeq _) = "JSBinOpNeq JSNoAnnot"
+    ss (JSBinOpOr _) = "JSBinOpOr JSNoAnnot"
+    ss (JSBinOpPlus _) = "JSBinOpPlus JSNoAnnot"
+    ss (JSBinOpRsh _) = "JSBinOpRsh JSNoAnnot"
+    ss (JSBinOpStrictEq _) = "JSBinOpStrictEq JSNoAnnot"
+    ss (JSBinOpStrictNeq _) = "JSBinOpStrictNeq JSNoAnnot"
+    ss (JSBinOpTimes _) = "JSBinOpTimes JSNoAnnot"
+    ss (JSBinOpUrsh _) = "JSBinOpUrsh JSNoAnnot"
 
 instance ShowStripped JSUnaryOp where
-    ss (JSUnaryOpDecr _) = "'--'"
-    ss (JSUnaryOpDelete _) = "'delete'"
-    ss (JSUnaryOpIncr _) = "'++'"
-    ss (JSUnaryOpMinus _) = "'-'"
-    ss (JSUnaryOpNot _) = "'!'"
-    ss (JSUnaryOpPlus _) = "'+'"
-    ss (JSUnaryOpTilde _) = "'~'"
-    ss (JSUnaryOpTypeof _) = "'typeof'"
-    ss (JSUnaryOpVoid _) = "'void'"
+    ss (JSUnaryOpDecr _) = "JSUnaryOpDecr JSNoAnnot"
+    ss (JSUnaryOpDelete _) = "JSUnaryOpDelete JSNoAnnot"
+    ss (JSUnaryOpIncr _) = "JSUnaryOpIncr JSNoAnnot"
+    ss (JSUnaryOpMinus _) = "JSUnaryOpMinus JSNoAnnot"
+    ss (JSUnaryOpNot _) = "JSUnaryOpNot JSNoAnnot"
+    ss (JSUnaryOpPlus _) = "JSUnaryOpPlus JSNoAnnot"
+    ss (JSUnaryOpTilde _) = "JSUnaryOpTilde JSNoAnnot"
+    ss (JSUnaryOpTypeof _) = "JSUnaryOpTypeof JSNoAnnot"
+    ss (JSUnaryOpVoid _) = "JSUnaryOpVoid JSNoAnnot"
 
 instance ShowStripped JSAssignOp where
-    ss (JSAssign _) = "'='"
-    ss (JSTimesAssign _) = "'*='"
-    ss (JSDivideAssign _) = "'/='"
-    ss (JSModAssign _) = "'%='"
-    ss (JSPlusAssign _) = "'+='"
-    ss (JSMinusAssign _) = "'-='"
-    ss (JSLshAssign _) = "'<<='"
-    ss (JSRshAssign _) = "'>>='"
-    ss (JSUrshAssign _) = "'>>>='"
-    ss (JSBwAndAssign _) = "'&='"
-    ss (JSBwXorAssign _) = "'^='"
-    ss (JSBwOrAssign _) = "'|='"
+    ss (JSAssign _) = "JSAssign JSNoAnnot"
+    ss (JSTimesAssign _) = "JSTimesAssign JSNoAnnot"
+    ss (JSDivideAssign _) = "JSDivideAssign JSNoAnnot"
+    ss (JSModAssign _) = "JSModAssign JSNoAnnot"
+    ss (JSPlusAssign _) = "JSPlusAssign JSNoAnnot"
+    ss (JSMinusAssign _) = "JSMinusAssign JSNoAnnot"
+    ss (JSLshAssign _) = "JSLshAssign JSNoAnnot"
+    ss (JSRshAssign _) = "JSRshAssign JSNoAnnot"
+    ss (JSUrshAssign _) = "JSUrshAssign JSNoAnnot"
+    ss (JSBwAndAssign _) = "JSBwAndAssign JSNoAnnot"
+    ss (JSBwXorAssign _) = "JSBwXorAssign JSNoAnnot"
+    ss (JSBwOrAssign _) = "JSBwOrAssign JSNoAnnot"
 
 instance ShowStripped JSVarInitializer where
-    ss (JSVarInit _ n) = "[" ++ ss n ++ "]"
-    ss JSVarInitNone = ""
+    ss (JSVarInit _ n) = "JSVarInit JSNoAnnot (" ++ ss n ++ ")"
+    ss JSVarInitNone = "JSVarInitNone"
 
 instance ShowStripped JSSemi where
-    ss (JSSemi _) = "JSSemicolon"
-    ss JSSemiAuto = ""
+    ss (JSSemi _) = "JSSemi JSNoAnnot"
+    ss JSSemiAuto = "JSSemiAuto"
 
 instance ShowStripped JSArrayElement where
-    ss (JSArrayElement e) = ss e
-    ss (JSArrayComma _) = "JSComma"
+    ss (JSArrayElement e) = "JSArrayElement (" ++ ss e ++ ")"
+    ss (JSArrayComma _) = "JSArrayComma JSNoAnnot"
 
 instance ShowStripped a => ShowStripped (JSCommaList a) where
-    ss xs = "(" ++ commaJoin (map ss $ fromCommaList xs) ++ ")"
+    ss (JSLCons xs _ x) = "JSLCons (" ++ ss xs ++ ") JSNoAnnot (" ++ ss x ++ ")"
+    ss (JSLOne x) = "JSLOne (" ++ ss x ++ ")"
+    ss JSLNil = "JSLNil"
 
 instance ShowStripped a => ShowStripped (JSCommaTrailingList a) where
-    ss (JSCTLComma xs _) = "[" ++ commaJoin (map ss $ fromCommaList xs) ++ ",JSComma]"
-    ss (JSCTLNone xs)    = "[" ++ commaJoin (map ss $ fromCommaList xs) ++ "]"
+    ss (JSCTLComma xs _) = "JSCTLComma (" ++ ss xs ++ ") JSNoAnnot" 
+    ss (JSCTLNone xs)    = "JSCTLNone (" ++ ss xs ++ ")"
 
 instance ShowStripped a => ShowStripped [a] where
     ss xs = "[" ++ commaJoin (map ss xs) ++ "]"
@@ -417,6 +416,10 @@ fromCommaList JSLNil = []
 
 singleQuote :: String -> String
 singleQuote s = '\'' : (s ++ "'")
+
+doubleQuote :: String -> String
+doubleQuote s@('\"':_) = show s
+doubleQuote s = '\"' : (s ++ "\"")
 
 ssid :: JSIdent -> String
 ssid (JSIdentName _ s) = singleQuote s
