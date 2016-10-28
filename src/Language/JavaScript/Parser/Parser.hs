@@ -9,7 +9,7 @@ module Language.JavaScript.Parser.Parser (
    -- parseExpr
    , parseUsing
    , showStripped
-   , showStrippedMaybe
+  --  , showStrippedMaybe
    ) where
 
 import Language.JavaScript.Parser.Grammar5
@@ -53,14 +53,14 @@ parseFileUtf8 filename =
      x <- hGetContents h
      return $ readJs x
 
-showStripped :: AST.JSAST -> String
+showStripped :: AST.JSAST -> AST.JSAST
 showStripped = AST.showStripped
 
-showStrippedMaybe :: Show a => Either a AST.JSAST -> String
-showStrippedMaybe maybeAst =
-  case maybeAst of
-    Left msg -> "Left (" ++ show msg ++ ")"
-    Right p -> "Right (" ++ AST.showStripped p ++ ")"
+-- showStrippedMaybe :: Show a => Either a AST.JSAST -> AST.JSAST
+-- showStrippedMaybe maybeAst =
+--   case maybeAst of
+--     Left msg -> "Left (" ++ show msg ++ ")"
+--     Right p -> "Right (" ++ AST.showStripped p ++ ")"
 
 -- | Parse one compound statement, or a sequence of simple statements.
 -- Generally used for interactive input, such as from the command line of an interpreter.
@@ -74,4 +74,3 @@ parseUsing ::
          -- or more Javascript statements, plus comments.
 
 parseUsing p input _srcName = runAlex input p
-

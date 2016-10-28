@@ -5,7 +5,7 @@ module Language.JavaScript.Parser
        , PA.parseFile
        , PA.parseFileUtf8
        , PA.showStripped
-       , PA.showStrippedMaybe
+      --  , PA.showStrippedMaybe
        -- * AST elements
        , JSExpression (..)
        , JSAnnot (..)
@@ -40,5 +40,3 @@ import Language.JavaScript.Parser.SrcLocation
 import Language.JavaScript.Pretty.Printer
 
 -- EOF
-
-
