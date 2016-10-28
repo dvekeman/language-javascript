@@ -139,8 +139,8 @@ instance Pretty JSStatement where
     pretty (JSForVar af alb v x1s s1 x2s s2 x3s arb x4) = text "for" <> parens (text "var " <+> pretty x1s <> text ";" <+> pretty x2s <> text ";" <+> pretty x3s) <+> prettyNestedBracesBlock x4
     pretty (JSForVarIn af alb v x1 i x2 arb x3)         = text "for" <> parens (text "var " <+> pretty x1 <+> pretty i <+> pretty x2) <+> prettyNestedBracesBlock x3
     pretty (JSFunction af n alb x2s arb x3 s)           = text "function" <+> pretty n <> parens (pretty x2s) <+> prettyNestedBracesBlock x3
-    pretty (JSIf annot alb x1 arb x2s)                  = text "if" <+> parens (pretty x1) <+> prettyNestedBracesBlock x2s
-    pretty (JSIfElse annot alb x1 arb x2s ea x3s)       = text "if" <+> parens (pretty x1) <+> prettyNestedBracesBlock x2s <+> text "else" <+> prettyNestedBracesBlock x3s
+    pretty (JSIf annot alb x1 arb x2s)                  = text "if" <+> parens (pretty x1) <+> prettyNestedStmt x2s
+    pretty (JSIfElse annot alb x1 arb x2s ea x3s)       = text "if" <+> parens (pretty x1) <+> prettyNestedStmt x2s <+> text "else" <+> prettyNestedStmt x3s
     pretty (JSLabelled l c v)                           = pretty l <> colon <+> pretty v
     pretty (JSEmptyStatement a)                         = text ";"
     pretty (JSExpressionStatement l s)                  = pretty l <> pretty s
@@ -212,7 +212,8 @@ instance Pretty JSVarInitializer where
 -----------------------------------------------------------------------
 -- Help functionality
 prettyNestedStmt :: JSStatement -> Doc
-prettyNestedStmt p = nest 2 (pretty p)
+prettyNestedStmt b@(JSStatementBlock _ _ _ _) = prettyNestedBracesBlock b
+prettyNestedStmt stmt = nest 2 (pretty stmt)
 
 prettyNestedBracesBlock :: Pretty a => a -> Doc
 prettyNestedBracesBlock p = nest 2 (char '{' P.<$> pretty p) P.<$> char '}'
